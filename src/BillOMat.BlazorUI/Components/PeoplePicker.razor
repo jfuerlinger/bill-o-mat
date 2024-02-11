@@ -1,0 +1,91 @@
+﻿@inject BillOMatApiClient billOMatApi
+
+@attribute [StreamRendering(true)]
+
+<div class="contact-list-wrapper">
+    <div class="contact-list">Patients</div>
+
+    @if (_patients is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        @foreach (var patient in _patients)
+        {
+            <div class="contact">
+                <div class="k-hstack">
+                    <TelerikAvatar Type="AvatarType.Text">
+                        @($"{patient.Firstname[0]}{patient.Lastname[0]}")
+                    </TelerikAvatar>
+                    <div>
+                        <h2>@($"{patient.Firstname} {patient.Lastname}")</h2>
+                        <p>@patient.Nickname</p>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    @* <div class="contact">
+    <div class="k-hstack">
+    <TelerikAvatar Type="AvatarType.Icon">
+    <TelerikSvgIcon Icon="@SvgIcon.User"></TelerikSvgIcon>
+    </TelerikAvatar>
+    <div>
+    <h2>Unknown</h2>
+    <p>Not specified</p>
+    </div>
+    </div>
+    </div> *@
+</div>
+
+@code {
+
+    private BillOMatApiClient.Patient[]? _patients;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _patients = await billOMatApi.GetPatientsAsync();
+    }
+
+    List<Person> Contacts = new List<Person>()
+    {
+        new Person()
+        {
+            Avatar = "JS",
+            Name = "Jason Smith",
+            Position = "UX Designer",
+            AvatarType = AvatarType.Text
+        },
+        new Person()
+        {
+            Avatar = "GP",
+            Name = "George Porter",
+            Position = "Software Engineer",
+            AvatarType = AvatarType.Text
+        },
+        new Person()
+        {
+            Avatar = "RICSU.jpg",
+            Name = "Michael Holz",
+            Position = "Manager",
+            AvatarType = AvatarType.Image
+        },
+        new Person()
+        {
+            Avatar = "GOURL.jpg",
+            Name = "André Stewart",
+            Position = "Product Manager",
+            AvatarType = AvatarType.Image
+        },
+    };
+
+    internal class Person
+    {
+        public required string Avatar { get; init; }
+        public required string Name { get; init; }
+        public required string Position { get; init; }
+        public AvatarType AvatarType { get; set; }
+    }
+}

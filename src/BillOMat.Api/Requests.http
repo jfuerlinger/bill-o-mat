@@ -1,0 +1,17 @@
+@hostname=localhost
+@port=5135
+
+
+GET http://{{hostname}}:{{port}}/api/patients
+
+###
+
+POST http://{{hostname}}:{{port}}/api/patients 
+Content-Type: application/json
+
+{
+    "firstname": "Anton",
+    "lastname": "Ther",
+    "nickname": "Toni",
+    "email": "anton.ther@gmail.com"
+}

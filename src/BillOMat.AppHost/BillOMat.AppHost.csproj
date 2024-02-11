@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <IsAspireHost>true</IsAspireHost>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Content Remove="appsettings.Development.json" />
+      <Content Remove="appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Aspire.Hosting" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BillOMat.Api\BillOMat.Api.csproj" />
+      <ProjectReference Include="..\BillOMat.BlazorUI\BillOMat.BlazorUI.csproj" />
+    </ItemGroup>
+
+</Project>
