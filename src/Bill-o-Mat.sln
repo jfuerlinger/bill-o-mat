@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BillOMat.AppHost", "BillOMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BillOMat.ServiceDefaults", "BillOMat.ServiceDefaults\BillOMat.ServiceDefaults.csproj", "{482EB951-7FA5-4D10-ADFF-DB94E2A4F111}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BillOMat.Api.UnitTests", "BillOMat.Api.UnitTests\BillOMat.Api.UnitTests.csproj", "{8BDBC0C6-FF10-48B0-BC68-EBF218C0DE59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{482EB951-7FA5-4D10-ADFF-DB94E2A4F111}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{482EB951-7FA5-4D10-ADFF-DB94E2A4F111}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{482EB951-7FA5-4D10-ADFF-DB94E2A4F111}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BDBC0C6-FF10-48B0-BC68-EBF218C0DE59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BDBC0C6-FF10-48B0-BC68-EBF218C0DE59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BDBC0C6-FF10-48B0-BC68-EBF218C0DE59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BDBC0C6-FF10-48B0-BC68-EBF218C0DE59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
