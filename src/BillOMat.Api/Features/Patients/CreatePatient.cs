@@ -14,7 +14,6 @@ namespace BillOMat.Api.Features.Patients;
 
 public static class CreatePatient
 {
-
     public class Command : IRequest<OneOf<int, List<ValidationFailure>>>
     {
         public required string Firstname { get; set; }
@@ -86,11 +85,13 @@ public class CreatePatientEndpoint : ICarterModule
         })
             .Accepts<CreatePatient.Command>("application/json")
             .Produces(201)
+            .Produces(429)
             .Produces<IEnumerable<ModelError>>(422)
             .WithTags("Patient")
             .WithName("AddPatient")
             .IncludeInOpenApi()
-            .AddFluentValidationAutoValidation();
+            .AddFluentValidationAutoValidation()
+            .RequireRateLimiting("fixed-window");
     }
 }
 

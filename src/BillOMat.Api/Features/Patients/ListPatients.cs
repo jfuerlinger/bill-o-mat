@@ -61,11 +61,13 @@ public class ListPatientsEndpoint : ICarterModule
                 );
         })
             .Produces(200)
+            .Produces(429)
             .Produces<IEnumerable<ModelError>>(422)
             .WithTags("Patient")
             .WithName("ListPatients")
             .IncludeInOpenApi()
-            .AddFluentValidationAutoValidation();
+            .AddFluentValidationAutoValidation()
+            .RequireRateLimiting("fixed-window");
     }
 }
 

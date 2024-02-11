@@ -3,6 +3,7 @@ using BillOMat.Api.Data.Repositories;
 using BillOMat.ServiceDefaults;
 using Carter;
 using FluentValidation;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 
@@ -10,6 +11,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
+
+builder.Services.AddRateLimiter(o =>
+{
+    o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    o.AddFixedWindowLimiter(
+        "fixed-window",
+        f =>
+        {
+            f.Window = TimeSpan.FromSeconds(10);
+            f.PermitLimit = 3;
+        });
+});
 
 // Add services to the container.
 builder.Services.AddProblemDetails();
@@ -54,9 +67,9 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
+app.UseRateLimiter();
 
 app.MapDefaultEndpoints();
-
 app.MapCarter();
 
 app.Run();
