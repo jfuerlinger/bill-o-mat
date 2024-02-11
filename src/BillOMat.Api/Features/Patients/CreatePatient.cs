@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning.Builder;
 using BillOMat.Api.Data;
+using BillOMat.Api.Data.Repositories;
 using BillOMat.Api.Entities;
 using Carter;
 using Carter.ModelBinding;
@@ -15,16 +16,18 @@ namespace BillOMat.Api.Features.Patients;
 
 public static class CreatePatient
 {
-    public class Command : IRequest<OneOf<int, List<ValidationFailure>>>
+    public class Command(string firstname, string lastname, string nickname, string email) 
+        : IRequest<OneOf<int, List<ValidationFailure>>>
     {
-        public required string Firstname { get; set; }
-        public required string Lastname { get; set; }
-        public required string Nickname { get; set; }
-        public required string Email { get; set; }
+        public required string Firstname { get; init; } = firstname;
+        public required string Lastname { get; init; } = lastname;
+        public required string Nickname { get; init; } = nickname;
+        public required string Email { get; init; } = email;
     }
 
     internal sealed class Handler(
         ApplicationDbContext dbContext,
+        IPatientRepository patientRepository,
         IValidator<Command> validator)
       : IRequestHandler<Command, OneOf<int, List<ValidationFailure>>>
     {
@@ -37,11 +40,22 @@ public static class CreatePatient
                 return validationResult.Errors;
             }
 
+            if(!await patientRepository.IsEmailUniqueAsync(
+                request.Email, 
+                cancellationToken))
+            {
+                return new List<ValidationFailure>() { 
+                    new(
+                        "Email", 
+                        "Email is already in use") };
+            }
+
             var patient = new Patient
             {
                 Firstname = request.Firstname,
                 Lastname = request.Lastname,
-                Nickname = request.Nickname
+                Nickname = request.Nickname,
+                Email = request.Email
             };
 
             dbContext.Patients.Add(patient);

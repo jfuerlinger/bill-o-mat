@@ -7,12 +7,16 @@ namespace BillOMat.Api.Data.Repositories
     public class PatientRepository(ApplicationDbContext dbContext)
         : IPatientRepository
     {
-        private readonly ApplicationDbContext _dbContext = dbContext;
-
         public Task<Patient[]> GetEntitiesAsync(Specification<Patient> specification)
         {
-            return _dbContext.Patients.GetQuery(specification)
+            return dbContext.Patients.GetQuery(specification)
                 .ToArrayAsync();
+        }
+
+        public async Task<bool> IsEmailUniqueAsync(string email, CancellationToken cancellationToken = default)
+        {
+            return !(await dbContext.Patients
+                .AnyAsync(p => p.Email == email, cancellationToken));
         }
     }
 }
