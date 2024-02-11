@@ -1,4 +1,5 @@
-﻿using BillOMat.Api.Data.Repositories;
+﻿using Asp.Versioning.Builder;
+using BillOMat.Api.Data.Repositories;
 using BillOMat.Api.Data.Specifications;
 using BillOMat.Api.Entities;
 using Carter;
@@ -48,26 +49,32 @@ public class ListPatientsEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet(
-            "api/patients",
-            async ([FromServices] ISender sender) =>
-        {
-            OneOf<Patient[], List<ValidationFailure>> listPatientResult
-                    = await sender.Send(new ListPatients.Query());
+        var versionSet = app.NewApiVersionSet()
+            .HasApiVersion(new Asp.Versioning.ApiVersion(1))
+            .Build();
 
-            return listPatientResult.Match(
-                   patients => Results.Ok(patients),
-                   errors => Results.BadRequest(string.Join("\n\r", errors))
-                );
-        })
-            .Produces(200)
-            .Produces(429)
-            .Produces<IEnumerable<ModelError>>(422)
-            .WithTags("Patient")
-            .WithName("ListPatients")
-            .IncludeInOpenApi()
-            .AddFluentValidationAutoValidation()
-            .RequireRateLimiting("fixed-window");
+        app.MapGet(
+            "patients",
+            async ([FromServices] ISender sender) =>
+            {
+                OneOf<Patient[], List<ValidationFailure>> listPatientResult
+                        = await sender.Send(new ListPatients.Query());
+
+                return listPatientResult.Match(
+                       patients => Results.Ok(patients),
+                       errors => Results.BadRequest(string.Join("\n\r", errors))
+                    );
+            })
+                .Produces(200)
+                .Produces(429)
+                .Produces<IEnumerable<ModelError>>(422)
+                .WithTags("Patient")
+                .WithName("ListPatients")
+                .IncludeInOpenApi()
+                .AddFluentValidationAutoValidation()
+                .RequireRateLimiting("fixed-window")
+                .WithApiVersionSet(versionSet)
+                .MapToApiVersion(1);
     }
 }
 

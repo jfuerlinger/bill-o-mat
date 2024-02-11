@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using BillOMat.Api.Data;
 using BillOMat.Api.Data.Repositories;
 using BillOMat.ServiceDefaults;
@@ -11,6 +12,27 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
+
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.DefaultApiVersion = new ApiVersion(1);
+        options.ReportApiVersions = true;
+        options.ApiVersionReader = ApiVersionReader.Combine(
+            new QueryStringApiVersionReader("api-version"),
+            new HeaderApiVersionReader("x-version"),
+            new MediaTypeApiVersionReader("ver")
+         );
+    })
+    .AddApiExplorer(options =>
+    {
+        // Add the versioned API explorer, which also adds IApiVersionDescriptionProvider service
+        // note: the specified format code will format the version as "'v'major[.minor][-status]"
+        options.GroupNameFormat = "'v'V";
+
+        options.DefaultApiVersion = new ApiVersion(1);
+    });
 
 builder.Services.AddRateLimiter(o =>
 {
@@ -46,9 +68,6 @@ var currentAssembly = typeof(Program).Assembly;
 builder.Services.AddValidatorsFromAssembly(currentAssembly);
 builder.Services.AddCarter();
 builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(currentAssembly));
-
-
-
 
 
 

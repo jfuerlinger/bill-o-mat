@@ -1,12 +1,12 @@
 @hostname=localhost
 @port=5135
+@api-version=1
 
-
-GET http://{{hostname}}:{{port}}/api/patients
+GET http://{{hostname}}:{{port}}/patients?api-version={{api-version}} 
 
 ###
 
-POST http://{{hostname}}:{{port}}/api/patients 
+POST http://{{hostname}}:{{port}}/patients?api-version={{api-version}} 
 Content-Type: application/json
 
 {

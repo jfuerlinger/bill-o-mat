@@ -1,4 +1,5 @@
-﻿using BillOMat.Api.Data;
+﻿using Asp.Versioning.Builder;
+using BillOMat.Api.Data;
 using BillOMat.Api.Entities;
 using Carter;
 using Carter.ModelBinding;
@@ -68,30 +69,37 @@ public class CreatePatientEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
+        var versionSet = app.NewApiVersionSet()
+            .HasApiVersion(new Asp.Versioning.ApiVersion(1))
+            .Build();
+
+
         app.MapPost(
-            "api/patients",
-            async (
-                        [FromBody] CreatePatient.Command command,
-                        [FromServices] ISender sender) =>
-        {
+        "patients",
+        async (
+                    [FromBody] CreatePatient.Command command,
+                    [FromServices] ISender sender) =>
+            {
 
-            OneOf<int, List<ValidationFailure>> createPatientResult
-                    = await sender.Send(command);
+                OneOf<int, List<ValidationFailure>> createPatientResult
+                        = await sender.Send(command);
 
 
-            return createPatientResult.Match(
-                   patientId => Results.Created($"/api/patients/{patientId}", patientId),
-                   errors => Results.BadRequest(errors));
-        })
-            .Accepts<CreatePatient.Command>("application/json")
-            .Produces(201)
-            .Produces(429)
-            .Produces<IEnumerable<ModelError>>(422)
-            .WithTags("Patient")
-            .WithName("AddPatient")
-            .IncludeInOpenApi()
-            .AddFluentValidationAutoValidation()
-            .RequireRateLimiting("fixed-window");
+                return createPatientResult.Match(
+                       patientId => Results.Created($"patients/{patientId}", patientId),
+                       errors => Results.BadRequest(errors));
+            })
+                .Accepts<CreatePatient.Command>("application/json")
+                .Produces(201)
+                .Produces(429)
+                .Produces<IEnumerable<ModelError>>(422)
+                .WithTags("Patient")
+                .WithName("AddPatient")
+                .IncludeInOpenApi()
+                .AddFluentValidationAutoValidation()
+                .RequireRateLimiting("fixed-window")
+                .WithApiVersionSet(versionSet)
+                .MapToApiVersion(1);
     }
 }
 
