@@ -2,9 +2,15 @@
 {
     public class Patient : EntityBase
     {
-        public string? Firstname { get; set; }
-        public string? Lastname { get; set; }
+        public required string FirstName { get; set; }
+        public required string LastName { get; set; }
         public required string Nickname { get; set; }
-        public string? Email { get; set; }
+        public required string Email { get; set; }
+        public List<Invoice> Invoices { get; set; } = [];
+
+        public void AddInvoice(Invoice invoice)
+        {
+            Invoices.Add(invoice);
+        }
     }
 }

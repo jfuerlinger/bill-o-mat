@@ -31,4 +31,8 @@
         </AssemblyAttribute>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Data\Specifications\Invoices\" />
+    </ItemGroup>
+
 </Project>

@@ -1,6 +1,4 @@
-﻿using Asp.Versioning.Builder;
-using BillOMat.Api.Data;
-using BillOMat.Api.Data.Repositories;
+﻿using BillOMat.Api.Data;
 using BillOMat.Api.Entities;
 using Carter;
 using Carter.ModelBinding;
@@ -16,22 +14,34 @@ namespace BillOMat.Api.Features.Patients;
 
 public static class CreatePatient
 {
-    public class Command(string firstname, string lastname, string nickname, string email) 
+    public class Command()
         : IRequest<OneOf<int, List<ValidationFailure>>>
     {
-        public required string Firstname { get; init; } = firstname;
-        public required string Lastname { get; init; } = lastname;
-        public required string Nickname { get; init; } = nickname;
-        public required string Email { get; init; } = email;
+        public required string FirstName { get; init; }
+        public required string LastName { get; init; }
+        public required string Nickname { get; init; }
+        public required string Email { get; init; }
+    }
+
+    public class CommandValidator : AbstractValidator<Command>
+    {
+        public CommandValidator()
+        {
+            RuleFor(x => x.FirstName).NotEmpty();
+            RuleFor(x => x.LastName).NotEmpty();
+            RuleFor(x => x.Nickname).NotEmpty();
+            RuleFor(x => x.Email).NotEmpty().EmailAddress();
+        }
     }
 
     internal sealed class Handler(
-        ApplicationDbContext dbContext,
-        IPatientRepository patientRepository,
+        IUnitOfWork unitOfWork,
         IValidator<Command> validator)
       : IRequestHandler<Command, OneOf<int, List<ValidationFailure>>>
     {
-        public async Task<OneOf<int, List<ValidationFailure>>> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<OneOf<int, List<ValidationFailure>>> Handle(
+            Command request, 
+            CancellationToken cancellationToken = default)
         {
             var validationResult = validator.Validate(request);
 
@@ -40,43 +50,34 @@ public static class CreatePatient
                 return validationResult.Errors;
             }
 
-            if(!await patientRepository.IsEmailUniqueAsync(
-                request.Email, 
+            if (!await unitOfWork.PatientRepository.IsEmailUniqueAsync(
+                request.Email,
                 cancellationToken))
             {
-                return new List<ValidationFailure>() { 
+                return new List<ValidationFailure>() {
                     new(
-                        "Email", 
-                        "Email is already in use") };
+                        "Email",
+                        "Email is already in use!") };
             }
 
             var patient = new Patient
             {
-                Firstname = request.Firstname,
-                Lastname = request.Lastname,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
                 Nickname = request.Nickname,
                 Email = request.Email
             };
 
-            dbContext.Patients.Add(patient);
+            unitOfWork.PatientRepository.Add(patient);
 
-            await dbContext.SaveChangesAsync(cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
             return patient.Id;
         }
     }
 
 
-    public class CommandValidator : AbstractValidator<Command>
-    {
-        public CommandValidator()
-        {
-            RuleFor(x => x.Firstname).NotEmpty();
-            RuleFor(x => x.Lastname).NotEmpty();
-            RuleFor(x => x.Nickname).NotEmpty();
-            RuleFor(x => x.Email).NotEmpty().EmailAddress();
-        }
-    }
+    
 }
 
 public class CreatePatientEndpoint : ICarterModule

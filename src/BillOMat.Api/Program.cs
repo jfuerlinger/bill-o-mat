@@ -50,7 +50,13 @@ builder.Services.AddRateLimiter(o =>
 builder.Services.AddProblemDetails();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.CustomSchemaIds(schemaId => 
+        schemaId
+            .ToString()
+            .Replace("+", "."));
+});
 
 builder.Services.AddFluentValidationAutoValidation();
 
@@ -62,13 +68,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
                            options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var currentAssembly = typeof(Program).Assembly;
 
 builder.Services.AddValidatorsFromAssembly(currentAssembly);
 builder.Services.AddCarter();
 builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(currentAssembly));
-
 
 
 var app = builder.Build();
@@ -79,7 +86,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     app.UseDeveloperExceptionPage();
-    IntializeDb(app);
+    
+    await IntializeDb(app);
 }
 
 // Configure the HTTP request pipeline.
@@ -93,10 +101,11 @@ app.MapCarter();
 
 app.Run();
 
-static void IntializeDb(WebApplication app)
+static async Task IntializeDb(WebApplication app)
 {
     using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.EnsureDeleted();
-    context.Database.EnsureCreated();
+
+    await context.Database.EnsureDeletedAsync();
+    await context.Database.MigrateAsync();
 }

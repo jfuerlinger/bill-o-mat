@@ -1,12 +1,14 @@
-﻿using BillOMat.Api.Entities;
+﻿using BillOMat.Api.Entities;    
 
-namespace BillOMat.Api.Data.Specifications
+namespace BillOMat.Api.Data.Specifications.Patients
 {
     public class AllPatientsSpecification : Specification<Patient>
     {
         public AllPatientsSpecification() : base()
         {
-
+            AddOrderBy(p => p.LastName);
         }
+
+
     }
 }

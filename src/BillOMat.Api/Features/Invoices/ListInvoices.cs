@@ -1,5 +1,5 @@
 ﻿using BillOMat.Api.Data;
-using BillOMat.Api.Data.Specifications.Patients;
+using BillOMat.Api.Data.Specifications.Institutes;
 using BillOMat.Api.Entities;
 using Carter;
 using Carter.ModelBinding;
@@ -11,20 +11,20 @@ using Microsoft.AspNetCore.Mvc;
 using OneOf;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 
-namespace BillOMat.Api.Features.Patients;
+namespace BillOMat.Api.Features.Invoices;
 
 public static class ListInvoices
 {
-    public class Query : IRequest<OneOf<Patient[], List<ValidationFailure>>>
+    public class Query : IRequest<OneOf<Invoice[], List<ValidationFailure>>>
     {
     }
 
     internal sealed class Handler(
         IUnitOfWork unitOfWork,
         IValidator<Query> validator)
-      : IRequestHandler<Query, OneOf<Patient[], List<ValidationFailure>>>
+      : IRequestHandler<Query, OneOf<Invoice[], List<ValidationFailure>>>
     {
-        public async Task<OneOf<Patient[], List<ValidationFailure>>> Handle(
+        public async Task<OneOf<Invoice[], List<ValidationFailure>>> Handle(
             Query request, 
             CancellationToken cancellationToken = default)
         {
@@ -35,7 +35,10 @@ public static class ListInvoices
                 return validationResult.Errors;
             }
 
-            return await unitOfWork.PatientRepository.GetEntitiesAsync(new AllPatientsSpecification(), cancellationToken);
+            return await unitOfWork.InvoiceRepository
+                .GetEntitiesAsync(
+                    new AllInvoicesSpecification(), 
+                    cancellationToken);
         }
     }
 
@@ -55,10 +58,10 @@ public class ListPatientsEndpoint : ICarterModule
             .Build();
 
         app.MapGet(
-            "patients",
+            "invoices",
             async ([FromServices] ISender sender) =>
             {
-                OneOf<Patient[], List<ValidationFailure>> listPatientResult
+                OneOf<Invoice[], List<ValidationFailure>> listPatientResult
                         = await sender.Send(new ListInvoices.Query());
 
                 return listPatientResult.Match(
@@ -69,8 +72,8 @@ public class ListPatientsEndpoint : ICarterModule
                 .Produces(200)
                 .Produces(429)
                 .Produces<IEnumerable<ModelError>>(422)
-                .WithTags("Patient")
-                .WithName("ListPatients")
+                .WithTags("Invoice")
+                .WithName("ListInvoices")
                 .IncludeInOpenApi()
                 .AddFluentValidationAutoValidation()
                 .RequireRateLimiting("fixed-window")

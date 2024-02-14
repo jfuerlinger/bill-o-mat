@@ -6,6 +6,8 @@ namespace BillOMat.Api.Data.Repositories
     public interface IGenericRepository<TEntity>
         where TEntity : EntityBase
     {
-        Task<TEntity[]> GetEntitiesAsync(Specification<TEntity> specification);
+        Task<TEntity[]> GetEntitiesAsync(Specification<TEntity> specification, CancellationToken cancellationToken = default);
+
+        void Add(TEntity entity);
     }
 }

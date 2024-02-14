@@ -1,22 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BillOMat.Api.Data.Specifications;
 using BillOMat.Api.Entities;
 
 namespace BillOMat.Api.Data.Repositories
 {
-    public class PatientRepository(ApplicationDbContext dbContext)
-        : IPatientRepository
+    public class PatientRepository(ApplicationDbContext dbContext) 
+        : GenericRepository<Patient>(dbContext: dbContext), 
+        IPatientRepository    
     {
-        public Task<Patient[]> GetEntitiesAsync(Specification<Patient> specification)
+        public async Task<bool> IsEmailUniqueAsync(
+            string email, 
+            CancellationToken cancellationToken = default)
         {
-            return dbContext.Patients.GetQuery(specification)
-                .ToArrayAsync();
-        }
-
-        public async Task<bool> IsEmailUniqueAsync(string email, CancellationToken cancellationToken = default)
-        {
-            return !(await dbContext.Patients
-                .AnyAsync(p => p.Email == email, cancellationToken));
+            return !(await DbContext.Patients
+                .AnyAsync(
+                p => p.Email == email, 
+                cancellationToken));
         }
     }
 }

@@ -15,3 +15,22 @@ Content-Type: application/json
     "nickname": "Toni",
     "email": "anton.ther@gmail.com"
 }
+
+
+###
+
+GET http://{{hostname}}:{{port}}/invoices?api-version={{api-version}} 
+
+
+###
+
+POST http://{{hostname}}:{{port}}/invoices?api-version={{api-version}} 
+Content-Type: application/json
+
+{
+  "invoiceNumber": "AB012345",
+  "instituteId": 1,
+  "patientId": 1,
+  "invoiceDate": "2024-02-14T12:11:07.312Z",
+  "amount": 58
+}
