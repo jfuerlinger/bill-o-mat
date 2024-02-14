@@ -30,8 +30,8 @@ jobs:
 
     - name: Register Nuget Packages
       env: # Or as an environment variable
-        telerik_username: ${{ secrets.MyTelerikAccountUserName }}
-        telerik_password: ${{ secrets.MyTelerikAccountPassword }}
+        telerik_username: ${{ secrets.MYTELERIKACCOUNTPASSWORD }}
+        telerik_password: ${{ secrets.MYTELERIKACCOUNTUSERNAME }}
       run: dotnet nuget update source "telerik.com" --username "$telerik_username" --store-password-in-clear-text --password "$telerik_password"
         
     - name: Restore workloads
