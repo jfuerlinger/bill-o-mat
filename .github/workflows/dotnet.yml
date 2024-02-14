@@ -32,7 +32,7 @@ jobs:
       env: # Or as an environment variable
         telerik_username: ${{ secrets.MyTelerikAccountUserName }}
         telerik_password: ${{ secrets.MyTelerikAccountPassword }}
-      run: dotnet nuget update source --name "telerik.com" --username "$telerik_username" --store-password-in-clear-text --password "$telerik_password"
+      run: dotnet nuget update source "telerik.com" --username "$telerik_username" --store-password-in-clear-text --password "$telerik_password"
         
     - name: Restore workloads
       run: dotnet workload restore
