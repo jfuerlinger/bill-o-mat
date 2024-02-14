@@ -9,12 +9,15 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env: 
+    TELERIK_USERNAME: ${{ secrets.MYTELERIKACCOUNTPASSWORD }}
+    TELERIK_PASSWORD: ${{ secrets.MYTELERIKACCOUNTUSERNAME }}
 
 jobs:
   build:
   
-    runs-on: ubuntu-latest
-      
+    runs-on: ubuntu-latest  
+
     defaults:
       run:
         working-directory: './src'    
@@ -28,11 +31,11 @@ jobs:
         dotnet-version: 9.0.x
         dotnet-quality: 'preview'
 
-    - name: Register Nuget Packages
-      env: # Or as an environment variable
-        telerik_username: ${{ secrets.MYTELERIKACCOUNTPASSWORD }}
-        telerik_password: ${{ secrets.MYTELERIKACCOUNTUSERNAME }}
-      run: dotnet nuget update source "telerik.com" --username "$telerik_username" --store-password-in-clear-text --password "$telerik_password"
+#    - name: Register Nuget Packages
+#      env: # Or as an environment variable
+#        TELERIK_USERNAME: ${{ secrets.MYTELERIKACCOUNTPASSWORD }}
+#        TELERIK_PASSWORD: ${{ secrets.MYTELERIKACCOUNTUSERNAME }}
+#      run: dotnet nuget update source "telerik.com" --username "$telerik_username" --store-password-in-clear-text --password "$telerik_password"
         
     - name: Restore workloads
       run: dotnet workload restore
