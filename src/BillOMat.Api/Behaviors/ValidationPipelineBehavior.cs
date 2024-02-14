@@ -1,12 +1,4 @@
-﻿using FluentValidation;
-using FluentValidation.Results;
-using MediatR;
-using OneOf;
-using OneOf.Types;
-using System.Linq.Expressions;
-using System.Reflection;
-
-namespace BillOMat.Api.Behaviors;
+﻿namespace BillOMat.Api.Behaviors;
 
 //public sealed class ValidationPipelineBehavior<TRequest, TResponse>
 //        (IEnumerable<IValidator<TRequest>> validators) 
