@@ -14,6 +14,10 @@ jobs:
   build:
   
     runs-on: ubuntu-latest
+    env:
+      TELERIK_USERNAME: ${{ secrets.MyTelerikAccountUsername }}
+      TELERIK_PASSWORD: ${{ secrets.MyTelerikAccountPassword }}
+      
     defaults:
       run:
         working-directory: './src'    
