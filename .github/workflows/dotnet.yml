@@ -28,13 +28,11 @@ jobs:
         dotnet-version: 9.0.x
         dotnet-quality: 'preview'
 
-    - name: Manipulate nuget.config
-      uses: Azure/powershell@v1.4.0
-      with:
-        # Specify the Az PowerShell script here.
-        inlineScript: dotnet nuget update source "telerik.com" --source "https://nuget.telerik.com/v3/index.json" --configfile "./src/nuget.config" --username '${{ secrets.MyTelerikAccountUserName }}' --password '${{ secrets.MyTelerikAccountPassword }}' --store-password-in-clear-text
-        azPSVersion: latest
-        failOnStandardError: true  
+    - name: Register Nuget Packages
+      env: # Or as an environment variable
+        telerik_username: ${{ secrets.MyTelerikAccountUserName }}
+        telerik_password: ${{ secrets.MyTelerikAccountPassword }}
+      run: dotnet nuget update source --name "telerik.com" --username "$telerik_username" --store-password-in-clear-text --password "$telerik_password"
         
     - name: Restore workloads
       run: dotnet workload restore
