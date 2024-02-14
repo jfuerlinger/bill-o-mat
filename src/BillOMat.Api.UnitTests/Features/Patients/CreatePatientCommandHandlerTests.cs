@@ -58,7 +58,7 @@ namespace BillOMat.Api.Test.Features.Patients
             // Assert
             result.Match(
                 patientId => throw new Exception("A patient was created with a duplicate email address!"),
-                failures => failures.Should().ContainEquivalentOf(new ValidationFailure("Email", "Email is already in use"))
+                failures => failures.Should().ContainEquivalentOf(new ValidationFailure("Email", "Email is already in use!"))
             );
         }
     }
