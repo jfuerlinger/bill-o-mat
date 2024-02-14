@@ -10,9 +10,9 @@ on:
     branches: [ "main" ]
 
 env: 
-    TELERIK_USERNAME: ${{ secrets.MYTELERIKACCOUNTPASSWORD }}
-    TELERIK_PASSWORD: ${{ secrets.MYTELERIKACCOUNTUSERNAME }}
-
+    TELERIK_USERNAME: ${{ secrets.MYTELERIKACCOUNTUSERNAME }}
+    TELERIK_PASSWORD: ${{ secrets.MYTELERIKACCOUNTPASSWORD }}
+    
 jobs:
   build:
   
