@@ -23,27 +23,21 @@ jobs:
     - uses: actions/checkout@v3
     
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 9.0.x
+        dotnet-quality: 'preview'
 
     - name: Manipulate nuget.config
       uses: Azure/powershell@v1.4.0
       with:
         # Specify the Az PowerShell script here.
-        inlineScript: dotnet nuget update source "Telerik" --source "https://nuget.telerik.com/v3/index.json" --configfile "./src/nuget.config" --username '${{ secrets.MyTelerikAccountUserName }}' --password '${{ secrets.MyTelerikAccountPassword }}' --store-password-in-clear-text
-        # Azure PS version to be used to execute the script, example: 1.8.0, 2.8.0, 3.4.0. To use the latest version, specify "latest".
+        inlineScript: dotnet nuget update source "telerik.com" --source "https://nuget.telerik.com/v3/index.json" --configfile "./src/nuget.config" --username '${{ secrets.MyTelerikAccountUserName }}' --password '${{ secrets.MyTelerikAccountPassword }}' --store-password-in-clear-text
         azPSVersion: latest
-        failOnStandardError: true
-    
-    - name: Install nuget
-      uses: nuget/setup-nuget@v1
-      with:
-        nuget-version: '5.x'
+        failOnStandardError: true  
         
     - name: Restore workloads
       run: dotnet workload restore
-
       
     - name: Restore dependencies
       run: dotnet restore
