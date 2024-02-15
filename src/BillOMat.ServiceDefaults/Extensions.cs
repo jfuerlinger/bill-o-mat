@@ -74,6 +74,10 @@ public static class Extensions
             builder.Services.ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddOtlpExporter());
         }
 
+        // Uncomment the following lines to enable the Prometheus exporter (requires the OpenTelemetry.Exporter.Prometheus.AspNetCore package)
+        builder.Services.AddOpenTelemetry()
+           .WithMetrics(metrics => metrics.AddPrometheusExporter());
+
         return builder;
     }
 

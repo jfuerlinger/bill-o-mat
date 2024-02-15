@@ -53,7 +53,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.CustomSchemaIds(schemaId => 
+    c.CustomSchemaIds(schemaId =>
         schemaId
             .ToString()
             .Replace("+", "."));
@@ -87,7 +87,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     app.UseDeveloperExceptionPage();
-    
+
     await IntializeDb(app);
 }
 
@@ -99,6 +99,16 @@ app.UseRateLimiter();
 
 app.MapDefaultEndpoints();
 app.MapCarter();
+
+app.MapGet("startup", () =>
+{
+    string? grafnaUrl = app.Configuration["GRAFANA_URL"];
+
+    return new
+    {
+        GrafanaUrl = grafnaUrl
+    };
+});
 
 app.Run();
 
