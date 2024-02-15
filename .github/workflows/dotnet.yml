@@ -38,7 +38,7 @@ jobs:
 
     - uses: actions/cache@v4
       with:
-        path: ${{ github.workspace }}\.nuget\packages
+        path: ${{ github.workspace }}/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
         restore-keys: |
           ${{ runner.os }}-nuget-
