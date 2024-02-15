@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: Build all
 
 on:
   push:
@@ -10,9 +10,14 @@ on:
     branches: [ "main" ]
 
 env: 
-    TELERIK_USERNAME: ${{ secrets.MYTELERIKACCOUNTPASSWORD }}
-    TELERIK_PASSWORD: ${{ secrets.MYTELERIKACCOUNTUSERNAME }}
+    TELERIK_USERNAME: ${{ secrets.MYTELERIKACCOUNTUSERNAME }}
+    TELERIK_PASSWORD: ${{ secrets.MYTELERIKACCOUNTPASSWORD }}
+    NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
+permissions:
+  checks: write
+  pull-requests: write
+    
 jobs:
   build:
   
@@ -23,7 +28,7 @@ jobs:
         working-directory: './src'    
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -31,11 +36,12 @@ jobs:
         dotnet-version: 9.0.x
         dotnet-quality: 'preview'
 
-#    - name: Register Nuget Packages
-#      env: # Or as an environment variable
-#        TELERIK_USERNAME: ${{ secrets.MYTELERIKACCOUNTPASSWORD }}
-#        TELERIK_PASSWORD: ${{ secrets.MYTELERIKACCOUNTUSERNAME }}
-#      run: dotnet nuget update source "telerik.com" --username "$telerik_username" --store-password-in-clear-text --password "$telerik_password"
+    - uses: actions/cache@v4
+      with:
+        path: ${{ github.workspace }}\.nuget\packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }} #hash of project files
+        restore-keys: |
+          ${{ runner.os }}-nuget-
         
     - name: Restore workloads
       run: dotnet workload restore
@@ -47,4 +53,11 @@ jobs:
       run: dotnet build --no-restore
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --logger trx --no-build --verbosity normal
+
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: |
+          **/TestResults/*.trx
