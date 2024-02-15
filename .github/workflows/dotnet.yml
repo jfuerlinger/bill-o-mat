@@ -49,13 +49,11 @@ jobs:
       run: dotnet build --no-restore
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=unittest-result.trx"
+      run: dotnet test --configuration Release --no-build --verbosity normal
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
         files: |
-          test-results/**/*.xml
-          test-results/**/*.trx
-          test-results/**/*.json
+          **/TestResults/*.trx
