@@ -6,9 +6,9 @@ namespace BillOMat.Api.Data.Specifications
     public abstract class Specification<TEntity>
         where TEntity : EntityBase
     {
-        public Specification() { }
+        protected Specification() { }
 
-        public Specification(Expression<Func<TEntity, bool>> criteria)
+        protected Specification(Expression<Func<TEntity, bool>> criteria)
         {
             Criteria = criteria;
         }

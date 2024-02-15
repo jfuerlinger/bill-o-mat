@@ -26,7 +26,7 @@ public static class ListInvoices
     {
         public async Task<OneOf<Patient[], List<ValidationFailure>>> Handle(
             Query request, 
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken)
         {
             var validationResult = validator.Validate(request);
 

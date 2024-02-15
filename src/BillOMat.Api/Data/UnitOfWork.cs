@@ -2,13 +2,13 @@
 
 namespace BillOMat.Api.Data
 {
-    public class UnitOfWork 
+    public class UnitOfWork
         : IUnitOfWork, IDisposable
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IPatientRepository _patientRepository;
         private readonly InvoiceRepository _invoiceRepository;
-        
+
         public IPatientRepository PatientRepository => _patientRepository;
 
         public IInvoiceRepository InvoiceRepository => _invoiceRepository;
@@ -28,12 +28,9 @@ namespace BillOMat.Api.Data
         private bool _disposed = false;
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposed)
+            if (!_disposed && disposing)
             {
-                if (disposing)
-                {
-                    _dbContext.Dispose();
-                }
+                _dbContext.Dispose();
             }
             _disposed = true;
         }

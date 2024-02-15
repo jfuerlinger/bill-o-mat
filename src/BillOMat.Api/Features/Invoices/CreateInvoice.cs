@@ -43,7 +43,7 @@ public static class CreateInvoice
     {
         public async Task<OneOf<int, List<ValidationFailure>>> Handle(
                 Command request,
-                CancellationToken cancellationToken = default)
+                CancellationToken cancellationToken)
         {
             var validationResult = validator.Validate(request);
 

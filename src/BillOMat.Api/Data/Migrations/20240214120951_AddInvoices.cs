@@ -103,8 +103,8 @@ namespace BillOMat.Api.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Institutes",
-                columns: new[] { "Id", "AddressLine1", "AddressLine2", "City", "Email", "Name", "Postalcode" },
-                values: new object[] { 1, "Linzerstraße 44", null, "Marchtrenk", null, "Dr. Melanie Eichberger", "4614" });
+                columns: ["Id", "AddressLine1", "AddressLine2", "City", "Email", "Name", "Postalcode"],
+                values: [1, "Linzerstraße 44", null, "Marchtrenk", null, "Dr. Melanie Eichberger", "4614"]);
 
             migrationBuilder.UpdateData(
                 table: "Patients",

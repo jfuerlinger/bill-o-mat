@@ -2,8 +2,6 @@
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace BillOMat.Api.Data.Migrations
 {
     /// <inheritdoc />
@@ -30,7 +28,7 @@ namespace BillOMat.Api.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Patients",
-                columns: new[] { "Id", "Email", "Firstname", "Lastname", "Nickname" },
+                columns: ["Id", "Email", "Firstname", "Lastname", "Nickname"],
                 values: new object[,]
                 {
                     { 1, null, "Josef", "Fürlinger", "Joe" },

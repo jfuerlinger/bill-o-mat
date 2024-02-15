@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using BillOMat.Api.Data;
+using BillOMat.Api.Data.Exceptions;
 using BillOMat.Api.Data.Repositories;
 using BillOMat.ServiceDefaults;
 using Carter;
@@ -62,7 +63,7 @@ builder.Services.AddFluentValidationAutoValidation();
 
 var connectionString =
     builder.Configuration.GetConnectionString("ApplicationDbContext")
-    ?? throw new Exception($"ConnectionString 'ApplicationDbContext' wasn't found!");
+    ?? throw new ConnectionStringNotFoundException("ApplicationDbContext");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
                            options.UseSqlServer(connectionString));

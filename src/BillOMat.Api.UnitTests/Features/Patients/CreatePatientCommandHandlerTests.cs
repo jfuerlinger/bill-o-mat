@@ -11,17 +11,13 @@ namespace BillOMat.Api.Test.Features.Patients
 {
     public class CreatePatientCommandHandlerTests
     {
-        private readonly Mock<ApplicationDbContext> _dbContextMock;
         private readonly Mock<IUnitOfWork> _unitOfWorkMock;
         private readonly Mock<IPatientRepository> _patientRepositoryMock;
-        private readonly Mock<IValidator<CreatePatient.Command>> _validatorMock;
 
         public CreatePatientCommandHandlerTests()
         {
-            _dbContextMock = new Mock<ApplicationDbContext>(MockBehavior.Strict, [new Mock<DbContextOptions>().Object]);
             _patientRepositoryMock = new Mock<IPatientRepository>();
             _unitOfWorkMock = new Mock<IUnitOfWork>();
-            _validatorMock = new Mock<IValidator<CreatePatient.Command>>();
         }
 
         [Fact]
