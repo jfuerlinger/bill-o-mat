@@ -64,7 +64,7 @@ jobs:
       if: always()
       with:
         files: |
-          **/TestResults/**/*.trx   
+          **/TestResults/*.trx   
 
     - uses: 5monkeys/cobertura-action@master
       with:
