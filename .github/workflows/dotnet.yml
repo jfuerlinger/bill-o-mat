@@ -13,6 +13,10 @@ env:
     TELERIK_USERNAME: ${{ secrets.MYTELERIKACCOUNTUSERNAME }}
     TELERIK_PASSWORD: ${{ secrets.MYTELERIKACCOUNTPASSWORD }}
     NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
+permissions:
+  checks: write
+  pull-requests: write
     
 jobs:
   build:
