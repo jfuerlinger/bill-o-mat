@@ -6,6 +6,10 @@ name: Build all
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'src/'
+      - '.github/'
+      
   pull_request:
     branches: [ "main" ]
 
