@@ -6,5 +6,7 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
         <InvariantGlobalization>false</InvariantGlobalization>
+        <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+        <LangVersion>preview</LangVersion>
     </PropertyGroup>
 </Project>
