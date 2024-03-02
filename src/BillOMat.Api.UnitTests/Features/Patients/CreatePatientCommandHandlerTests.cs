@@ -2,9 +2,7 @@ using BillOMat.Api.Data;
 using BillOMat.Api.Data.Repositories;
 using BillOMat.Api.Features.Patients;
 using FluentAssertions;
-using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace BillOMat.Api.Test.Features.Patients

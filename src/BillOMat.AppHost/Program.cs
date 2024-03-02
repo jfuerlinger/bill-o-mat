@@ -8,7 +8,7 @@ var grafana = builder.AddContainer("grafana", "grafana/grafana")
 var cache = builder.AddRedis("cache");
 
 var apiService = builder.AddProject<Projects.BillOMat_Api>("apiservice")
-    .WithEnvironment("GRAFANA_URL", grafana.GetEndpoint("grafana-http")); ;
+    .WithEnvironment("GRAFANA_URL", grafana.GetEndpoint("grafana-http"));
 
 builder.AddProject<Projects.BillOMat_BlazorUI>("webfrontend")
     .WithReference(cache)

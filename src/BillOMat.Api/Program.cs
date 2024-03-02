@@ -120,3 +120,4 @@ static async Task IntializeDb(WebApplication app)
     await context.Database.EnsureDeletedAsync();
     await context.Database.MigrateAsync();
 }
+
