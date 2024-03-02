@@ -64,5 +64,9 @@ jobs:
       if: always()
       with:
         files: |
-          **/TestResults/*.trx
-          **/TestResults/*.xml
+          **/TestResults/*.trx   
+
+    - uses: 5monkeys/cobertura-action@master
+      with:
+        path: '**/TestResults/**/*.xml'
+        minimum_coverage: 75
