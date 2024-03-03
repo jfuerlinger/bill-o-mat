@@ -1,6 +1,7 @@
 ﻿using BillOMat.Api.Data;
 using BillOMat.Api.Data.Specifications.Institutes;
 using BillOMat.Api.Entities;
+using BillOMat.Api.Mappers;
 using Carter;
 using Carter.ModelBinding;
 using Carter.OpenApi;
@@ -25,7 +26,7 @@ public static class ListInvoices
       : IRequestHandler<Query, OneOf<Invoice[], List<ValidationFailure>>>
     {
         public async Task<OneOf<Invoice[], List<ValidationFailure>>> Handle(
-            Query request, 
+            Query request,
             CancellationToken cancellationToken)
         {
             var validationResult = validator.Validate(request);
@@ -37,17 +38,19 @@ public static class ListInvoices
 
             return await unitOfWork.InvoiceRepository
                 .GetEntitiesAsync(
-                    new AllInvoicesSpecification(), 
+                    new AllInvoicesSpecification(),
                     cancellationToken);
         }
     }
 
-    public class Validator : AbstractValidator<Query>
+    public class QueryValidator : AbstractValidator<Query>
     {
-        public Validator() { }
+        public QueryValidator() { }
 
     }
 }
+
+public record ListInvoiceDto(int Id, string InvoiceNumber, int InstituteId, int PatientId, DateTime InvoiceDate, decimal Amount, DateTime? SentToOegk, DateTime? SentToMerkur)
 
 public class ListPatientsEndpoint : ICarterModule
 {
@@ -65,11 +68,19 @@ public class ListPatientsEndpoint : ICarterModule
                         = await sender.Send(new ListInvoices.Query());
 
                 return listPatientResult.Match(
-                       patients => Results.Ok(patients),
+                       invoices =>
+                       {
+                           var mapper = new InvoiceMapper();
+
+                           var resultDtos = invoices
+                                                .Select(i => mapper.InvoiceToListInvoicesDto(i));
+
+                           return Results.Ok(resultDtos);
+                       },
                        errors => Results.BadRequest(string.Join("\n\r", errors))
                     );
             })
-                .Produces(200)
+                .Produces<IEnumerable<ListInvoiceDto>>(200)
                 .Produces(429)
                 .Produces<IEnumerable<ModelError>>(422)
                 .WithTags("Invoice")

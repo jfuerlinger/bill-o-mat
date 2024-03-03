@@ -1,6 +1,7 @@
 ﻿using BillOMat.Api.Data;
 using BillOMat.Api.Data.Specifications.Patients;
 using BillOMat.Api.Entities;
+using BillOMat.Api.Mappers;
 using Carter;
 using Carter.ModelBinding;
 using Carter.OpenApi;
@@ -16,9 +17,7 @@ namespace BillOMat.Api.Features.Patients;
 
 public static class ListPatients
 {
-    public class Query : IRequest<OneOf<Patient[], List<ValidationFailure>>>
-    {
-    }
+    public class Query : IRequest<OneOf<Patient[], List<ValidationFailure>>> { }
 
     internal sealed class Handler(
         IUnitOfWork unitOfWork,
@@ -26,7 +25,7 @@ public static class ListPatients
       : IRequestHandler<Query, OneOf<Patient[], List<ValidationFailure>>>
     {
         public async Task<OneOf<Patient[], List<ValidationFailure>>> Handle(
-            Query request, 
+            Query request,
             CancellationToken cancellationToken)
         {
             var validationResult = validator.Validate(request);
@@ -47,6 +46,8 @@ public static class ListPatients
     }
 }
 
+public record ListPatientsDto(int Id, string FirstName, string LastName, string Nickname, string Email);
+
 public class ListPatientsEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
@@ -63,11 +64,19 @@ public class ListPatientsEndpoint : ICarterModule
                         = await sender.Send(new ListPatients.Query());
 
                 return listPatientResult.Match(
-                       patients => Results.Ok(patients),
+                       patients =>
+                       {
+                           PatientMapper mapper = new();
+                           var resultDtos = patients
+                                               .Select(p =>
+                                                    mapper.PatientToListPatientsDto(p));
+
+                           return Results.Ok(resultDtos);
+                       },
                        errors => Results.BadRequest(string.Join("\n\r", errors))
                     );
             })
-                .Produces((int)HttpStatusCode.OK)
+                .Produces<IEnumerable<ListPatientsDto>>((int)HttpStatusCode.OK)
                 .Produces((int)HttpStatusCode.TooManyRequests)
                 .Produces<IEnumerable<ModelError>>((int)HttpStatusCode.UnprocessableContent)
                 .WithTags("Patient")

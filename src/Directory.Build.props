@@ -8,5 +8,6 @@
         <InvariantGlobalization>false</InvariantGlobalization>
         <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
         <LangVersion>preview</LangVersion>
+        <MapperlyAbstractionsScope>runtime</MapperlyAbstractionsScope>
     </PropertyGroup>
 </Project>

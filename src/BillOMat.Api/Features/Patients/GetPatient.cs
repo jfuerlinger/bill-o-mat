@@ -1,6 +1,7 @@
 ﻿using BillOMat.Api.Data;
 using BillOMat.Api.Data.Specifications.Patients;
 using BillOMat.Api.Entities;
+using BillOMat.Api.Mappers;
 using Carter;
 using Carter.ModelBinding;
 using Carter.OpenApi;
@@ -63,6 +64,8 @@ public static class GetPatient
     }
 }
 
+public record GetPatientDto(int Id, string FirstName, string LastName, string Nickname, string Email);
+
 public class GetPatientEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
@@ -79,12 +82,18 @@ public class GetPatientEndpoint : ICarterModule
                         = await sender.Send(new GetPatient.Query(id));
 
                 return getPatientResult.Match(
-                       patient => Results.Ok(patient),
+                       patient =>
+                       {
+                           PatientMapper mapper = new();
+                           var resultDto = mapper.PatientToGetPatientDto(patient);
+
+                           return Results.Ok(resultDto);
+                       },
                        errors => Results.BadRequest(string.Join("\n\r", errors)),
                        notfound => Results.NotFound()
                     );
             })
-                .Produces((int)HttpStatusCode.OK)
+                .Produces<GetPatientDto>((int)HttpStatusCode.OK)
                 .Produces((int)HttpStatusCode.TooManyRequests)
                 .Produces((int)HttpStatusCode.NotFound)
                 .Produces<IEnumerable<ModelError>>((int)HttpStatusCode.UnprocessableContent)
