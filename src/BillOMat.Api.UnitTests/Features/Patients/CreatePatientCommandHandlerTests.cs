@@ -4,6 +4,7 @@ using BillOMat.Api.Features.Patients;
 using FluentAssertions;
 using FluentValidation.Results;
 using Moq;
+using Xunit.Categories;
 
 namespace BillOMat.Api.Test.Features.Patients
 {
@@ -19,6 +20,7 @@ namespace BillOMat.Api.Test.Features.Patients
         }
 
         [Fact]
+        [UnitTest]
         public async Task Handle_Should_ReturnValidationFailure_WhenEmailIsNotUniqe()
         {
             // Arrange

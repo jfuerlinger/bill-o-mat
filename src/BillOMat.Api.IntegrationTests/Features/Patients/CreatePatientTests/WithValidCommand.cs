@@ -3,11 +3,17 @@ using FluentAssertions;
 using System.Diagnostics;
 using System.Net;
 using Testcontainers.MsSql;
+using Xunit.Categories;
 
 namespace BillOMat.Api.IntegrationTests.Features.Patients.CreatePatientTests;
+
+[Collection("Integration Tests with TestContainers")]
 public sealed class WithValidCommand : IAsyncLifetime
 {
-    private readonly MsSqlContainer _msSqlContainer = new MsSqlBuilder().Build();
+    private readonly MsSqlContainer _msSqlContainer = new MsSqlBuilder()
+        .WithAutoRemove(false)
+        .WithCleanUp(true)
+        .Build();
 
     public async Task InitializeAsync()
         => await _msSqlContainer.StartAsync();
@@ -16,6 +22,7 @@ public sealed class WithValidCommand : IAsyncLifetime
         => await _msSqlContainer.DisposeAsync();
 
     [Fact]
+    [IntegrationTest]
     public async Task CreatePatientEndpoint_ValidPatientCreateRequest_PatientShouldBeInTheDatabase()
     {
         // arrange
