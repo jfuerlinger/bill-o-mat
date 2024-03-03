@@ -8,7 +8,5 @@ namespace BillOMat.Api.Data.Specifications.Patients
         {
             AddOrderBy(p => p.LastName);
         }
-
-
     }
 }

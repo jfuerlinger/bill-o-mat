@@ -9,6 +9,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using OneOf;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
+using System.Net;
 
 namespace BillOMat.Api.Features.Patients;
 
@@ -105,11 +106,11 @@ public class CreatePatientEndpoint : ICarterModule
                        errors => Results.BadRequest(errors));
             })
                 .Accepts<CreatePatient.Command>("application/json")
-                .Produces(201)
-                .Produces(429)
-                .Produces<IEnumerable<ModelError>>(422)
+                .Produces((int)HttpStatusCode.Created)
+                .Produces((int)HttpStatusCode.TooManyRequests)
+                .Produces<IEnumerable<ModelError>>((int)HttpStatusCode.UnprocessableContent)
                 .WithTags("Patient")
-                .WithName("AddPatient")
+                .WithName(nameof(CreatePatient))
                 .IncludeInOpenApi()
                 .AddFluentValidationAutoValidation()
                 .RequireRateLimiting("fixed-window")

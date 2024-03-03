@@ -23,7 +23,7 @@ public sealed class WithValidCommand : IAsyncLifetime
 
     [Fact]
     [IntegrationTest]
-    public async Task CreatePatientEndpoint_ValidPatientCreateRequest_PatientShouldBeInTheDatabase()
+    public async Task CreatePatientEndpoint_ValidPatientCreateRequest_ResultShouldBeHttpCreated()
     {
         // arrange
         string connectionString = _msSqlContainer.GetConnectionString();
@@ -50,5 +50,43 @@ public sealed class WithValidCommand : IAsyncLifetime
         response.StatusCode
             .Should()
             .Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    [IntegrationTest]
+    public async Task CreatePatientEndpoint_ValidPatientCreateRequest_PatientShouldBeDeliveredByGet()
+    {
+        // arrange
+        string connectionString = _msSqlContainer.GetConnectionString();
+        Debug.WriteLine(connectionString);
+
+        var webAppFactory =
+            new BillOMatWebApplicationFactory<Program>(
+                connectionString);
+
+        var client = webAppFactory.CreateClient();
+
+        // act
+        var createResponse = await client.PostAsJsonAsync(
+                           "/patients?api-version=1",
+                            new CreatePatient.Command
+                            {
+                                FirstName = "Annemarie",
+                                LastName = "Fürlinger",
+                                Nickname = "Oma",
+                                Email = "annemarie.fuerlinger@gmail.com"
+                            });
+
+        var createdPatientId = Convert.ToInt32(
+                                        await createResponse
+                                                .Content
+                                                .ReadAsStringAsync());
+
+        var response = await client.GetAsync($"/patients/{createdPatientId}?api-version=1");
+
+        // assert
+        response.StatusCode
+            .Should()
+            .Be(HttpStatusCode.OK);
     }
 }

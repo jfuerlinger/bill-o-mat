@@ -9,24 +9,26 @@ using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using OneOf;
+using OneOf.Types;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using System.Net;
 
 namespace BillOMat.Api.Features.Patients;
 
-public static class ListPatients
+public static class GetPatient
 {
-    public class Query : IRequest<OneOf<Patient[], List<ValidationFailure>>>
+    public class Query(int id) : IRequest<OneOf<Patient, List<ValidationFailure>, NotFound>>
     {
+        public int Id { get; init; } = id;
     }
 
     internal sealed class Handler(
         IUnitOfWork unitOfWork,
         IValidator<Query> validator)
-      : IRequestHandler<Query, OneOf<Patient[], List<ValidationFailure>>>
+      : IRequestHandler<Query, OneOf<Patient, List<ValidationFailure>, NotFound>>
     {
-        public async Task<OneOf<Patient[], List<ValidationFailure>>> Handle(
-            Query request, 
+        public async Task<OneOf<Patient, List<ValidationFailure>, NotFound>> Handle(
+            Query request,
             CancellationToken cancellationToken)
         {
             var validationResult = validator.Validate(request);
@@ -36,18 +38,32 @@ public static class ListPatients
                 return validationResult.Errors;
             }
 
-            return await unitOfWork.PatientRepository.GetEntitiesAsync(new AllPatientsSpecification(), cancellationToken);
+            var patients = await unitOfWork.PatientRepository.GetEntitiesAsync(new PatientByIdSpecification(request.Id), cancellationToken);
+
+            if (patients.Length == 1)
+            {
+                return patients[0];
+            }
+            else
+            {
+                return new NotFound();
+            }
         }
     }
 
     public class Validator : AbstractValidator<Query>
     {
-        public Validator() { }
+        public Validator()
+        {
+            RuleFor(x => x.Id)
+                   .NotEmpty()
+                   .GreaterThan(0);
+        }
 
     }
 }
 
-public class ListPatientsEndpoint : ICarterModule
+public class GetPatientEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
@@ -56,22 +72,24 @@ public class ListPatientsEndpoint : ICarterModule
             .Build();
 
         app.MapGet(
-            "patients",
-            async ([FromServices] ISender sender) =>
+            "patients/{id}",
+            async ([FromServices] ISender sender, int id) =>
             {
-                OneOf<Patient[], List<ValidationFailure>> listPatientResult
-                        = await sender.Send(new ListPatients.Query());
+                OneOf<Patient, List<ValidationFailure>, NotFound> getPatientResult
+                        = await sender.Send(new GetPatient.Query(id));
 
-                return listPatientResult.Match(
-                       patients => Results.Ok(patients),
-                       errors => Results.BadRequest(string.Join("\n\r", errors))
+                return getPatientResult.Match(
+                       patient => Results.Ok(patient),
+                       errors => Results.BadRequest(string.Join("\n\r", errors)),
+                       notfound => Results.NotFound()
                     );
             })
                 .Produces((int)HttpStatusCode.OK)
                 .Produces((int)HttpStatusCode.TooManyRequests)
+                .Produces((int)HttpStatusCode.NotFound)
                 .Produces<IEnumerable<ModelError>>((int)HttpStatusCode.UnprocessableContent)
                 .WithTags("Patient")
-                .WithName(nameof(ListPatients))
+                .WithName(nameof(GetPatient))
                 .IncludeInOpenApi()
                 .AddFluentValidationAutoValidation()
                 .RequireRateLimiting("fixed-window")
