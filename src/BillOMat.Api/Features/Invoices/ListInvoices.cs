@@ -50,7 +50,7 @@ public static class ListInvoices
     }
 }
 
-public record ListInvoiceDto(int Id, string InvoiceNumber, int InstituteId, int PatientId, DateTime InvoiceDate, decimal Amount, DateTime? SentToOegk, DateTime? SentToMerkur)
+public record ListInvoiceDto(int Id, string InvoiceNumber, int InstituteId, int PatientId, DateTime InvoiceDate, decimal Amount, DateTime? SentToOegk, DateTime? SentToMerkur);
 
 public class ListPatientsEndpoint : ICarterModule
 {
