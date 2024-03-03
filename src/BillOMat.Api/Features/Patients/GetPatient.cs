@@ -51,9 +51,9 @@ public static class GetPatient
         }
     }
 
-    public class Validator : AbstractValidator<Query>
+    public class QueryValidator : AbstractValidator<Query>
     {
-        public Validator()
+        public QueryValidator()
         {
             RuleFor(x => x.Id)
                    .NotEmpty()
